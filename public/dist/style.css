@@ -728,10 +728,6 @@ label {
   .store__details {
     padding: 2rem; }
     .store__details p {
-      z-index: 2;
-      position: relative;
-      background-color: #FFF6;
-      color: #222;
       line-height: 1.2;
       margin-bottom: 0; }
   @media all and (max-width: 850px) {
