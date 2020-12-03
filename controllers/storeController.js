@@ -40,6 +40,8 @@ exports.updateStore = async (req, res) => {
   // find and update the store
   const conditions = { _id: req.params.id };
   const update = req.body;
+  update.location.type = 'Point';
+
   const options = {
     new: true, // return the new store instead of the old one
     runValidators: true,
