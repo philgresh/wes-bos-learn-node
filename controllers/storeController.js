@@ -1,6 +1,18 @@
 const mongoose = require('mongoose');
+const multer = require('multer');
+const jimp = require('jimp');
+const uuid = require('uuid');
 
 const Store = mongoose.model('Store');
+const multerOptions = {
+  storage: multer.memoryStorage(),
+  fileFilter(req, file, next) {
+    const isPhoto = file.mimetype.startsWith('image/');
+    if (isPhoto) {
+      next(null, true);
+    } else next({ message: 'That filetype isn\t allowed' }, false);
+  },
+};
 
 exports.homePage = (_req, res) => {
   res.render('index');
@@ -10,6 +22,27 @@ exports.addStore = (_req, res) => {
   res.render('editStore', {
     title: 'Add Store',
   });
+};
+
+exports.uploadPhoto = multer(multerOptions).single('photo');
+
+exports.resize = async (req, res, next) => {
+  if (!req.file) {
+    next();
+    return;
+  }
+  const { mimetype, buffer } = req.file;
+  const extension = mimetype.split('/')[1];
+
+  const newName = `${uuid.v4()}.${extension}`;
+  req.body.photo = newName;
+
+  const photo = await jimp.read(buffer);
+  await photo.resize(800, jimp.AUTO);
+
+  await photo.write(`./public/uploads/${req.body.photo}`);
+
+  next();
 };
 
 exports.createStore = async (req, res) => {
@@ -38,6 +71,7 @@ exports.editStore = async (req, res) => {
 
 exports.updateStore = async (req, res) => {
   // find and update the store
+  console.log({ params: req.params, body: req.body });
   const conditions = { _id: req.params.id };
   const update = req.body;
   update.location.type = 'Point';
