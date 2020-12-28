@@ -71,7 +71,6 @@ exports.editStore = async (req, res) => {
 
 exports.updateStore = async (req, res) => {
   // find and update the store
-  console.log({ params: req.params, body: req.body });
   const conditions = { _id: req.params.id };
   const update = req.body;
   update.location.type = 'Point';
@@ -93,4 +92,12 @@ exports.updateStore = async (req, res) => {
   );
   res.redirect(`/stores/${store._id}/edit`);
   // Redriect them the store and tell them it worked
+};
+
+exports.getStoreBySlug = async (req, res, next) => {
+  const store = await Store.findOne({ slug: req.params.slug });
+  if (!store) {
+    return next();
+  }
+  res.render('showStore', { title: store.name, store });
 };
