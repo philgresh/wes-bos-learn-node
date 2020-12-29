@@ -94,6 +94,7 @@ exports.updateStore = async (req, res) => {
   // Redriect them the store and tell them it worked
 };
 
+// eslint-disable-next-line consistent-return
 exports.getStoreBySlug = async (req, res, next) => {
   const store = await Store.findOne({ slug: req.params.slug });
   if (!store) {
@@ -102,8 +103,16 @@ exports.getStoreBySlug = async (req, res, next) => {
   res.render('showStore', { title: store.name, store });
 };
 
-exports.getStoresByTag = async (req, res, next) => {
-  const tags = await Store.getTagsList();
+exports.getStoresByTag = async (req, res, _next) => {
+  const tagsPromise = Store.getTagsList();
   const { tag } = req.params;
-  res.render('tags', { tag: tag || 'Tags', tags, title: 'Tags' });
+  const tagQuery = tag || { $exists: true };
+  const storesPromise = Store.find({ tags: tagQuery });
+  const [tags, stores] = await Promise.all([tagsPromise, storesPromise]);
+  res.render('tags', {
+    tags,
+    stores,
+    tag: tag || 'Tags',
+    title: 'Tags',
+  });
 };
