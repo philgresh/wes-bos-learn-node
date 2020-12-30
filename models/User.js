@@ -1,13 +1,12 @@
 const mongoose = require('mongoose');
+const _md5 = require('md5');
+const validator = require('validator');
+const mongodbErrorHandler = require('mongoose-mongodb-errors');
+const passportLocalMongoose = require('passport-local-mongoose');
 
 const { Schema } = mongoose;
 
 mongoose.Promise = global.Promise;
-
-const md5 = require('md5');
-const validator = require('validator');
-const mongodbErrorHandler = require('mongoose-mongodb-errors');
-const passportLocalMongoose = require('passport-local-mongoose');
 
 const userSchema = new Schema({
   email: {

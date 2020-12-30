@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 const express = require('express');
 const session = require('express-session');
 const mongoose = require('mongoose');
@@ -12,6 +13,7 @@ const expressValidator = require('express-validator');
 const routes = require('./routes/index');
 const helpers = require('./helpers');
 const errorHandlers = require('./handlers/errorHandlers');
+require('./handlers/passport');
 
 // create our Express app
 const app = express();
@@ -42,7 +44,7 @@ app.use(
     resave: false,
     saveUninitialized: false,
     store: new MongoStore({ mongooseConnection: mongoose.connection }),
-  })
+  }),
 );
 
 // // Passport JS is what we use to handle our logins
