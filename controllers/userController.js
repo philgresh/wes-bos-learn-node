@@ -1,5 +1,9 @@
 const mongoose = require('mongoose');
 const promisify = require('es6-promisify');
+const crypto = require('crypto');
+
+const hash = (token) => crypto.createHash('sha256').update(token).digest('hex');
+
 
 const User = mongoose.model('User');
 
