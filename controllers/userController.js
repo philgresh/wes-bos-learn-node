@@ -42,7 +42,7 @@ exports.validateRegister = (req, res, next) => {
   next();
 };
 
-exports.register = async (req, res, next) => {
+exports.register = async (req, _res, next) => {
   const user = new User({
     email: req.body.email,
     name: req.body.name,
@@ -50,4 +50,30 @@ exports.register = async (req, res, next) => {
   const register = promisify(User.register, User); // Second parameter is object to bind it to
   await register(user, req.body.password);
   next();
+};
+
+exports.account = (req, res) => {
+  res.render('account', { title: 'Edit Your Account' });
+};
+
+exports.updateAccount = async (req, res) => {
+  const { name, email } = req.body;
+  const { _id } = req.user;
+
+  const query = { _id };
+  const updates = {
+    $set: {
+      name,
+      email,
+    },
+  };
+  const options = {
+    new: true,
+    runValidators: true,
+    context: 'query',
+  };
+
+  User.findOneAndUpdate(query, updates, options).then(() => {
+    res.redirect('back');
+  });
 };

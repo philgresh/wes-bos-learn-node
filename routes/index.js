@@ -7,7 +7,7 @@ const { catchErrors } = require('../handlers/errorHandlers');
 const router = express.Router();
 
 router.get('/', storeController.homePage);
-router.get('/add', storeController.addStore);
+router.get('/add', authController.isLoggedIn, storeController.addStore);
 router.post(
   '/add',
   storeController.uploadPhoto,
@@ -29,7 +29,7 @@ router.get('/tags', catchErrors(storeController.getStoresByTag));
 router.get('/tags/:tag', catchErrors(storeController.getStoresByTag));
 
 router.get('/login', userController.loginForm);
-router.post('/login', userController.loginForm);
+router.post('/login', authController.login);
 
 router.get('/register', userController.registerForm);
 router.post(
@@ -37,6 +37,15 @@ router.post(
   userController.validateRegister,
   userController.register,
   authController.login,
+);
+
+router.get('/logout', authController.logout);
+
+router.get('/account', authController.isLoggedIn, userController.account);
+router.post(
+  '/account',
+  authController.isLoggedIn,
+  catchErrors(userController.updateAccount),
 );
 
 module.exports = router;

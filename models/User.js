@@ -1,8 +1,12 @@
+/* eslint-disable func-names */
 const mongoose = require('mongoose');
-const _md5 = require('md5');
+const md5 = require('md5');
 const validator = require('validator');
 const mongodbErrorHandler = require('mongoose-mongodb-errors');
 const passportLocalMongoose = require('passport-local-mongoose');
+
+// eslint-disable-next-line no-useless-escape
+const EMAIL_SUBADDRESS_STRIPPER_REGEX = /(\+.*)(?=\@)/;
 
 const { Schema } = mongoose;
 
@@ -22,6 +26,13 @@ const userSchema = new Schema({
     required: 'Please supply a name',
     trim: true,
   },
+});
+
+userSchema.virtual('gravatar').get(function () {
+  const email = this.email.replace(EMAIL_SUBADDRESS_STRIPPER_REGEX, '');
+
+  const hash = md5(email);
+  return `https://gravatar.com/avatar/${hash}?s=200`;
 });
 
 userSchema.plugin(passportLocalMongoose, { usernameField: 'email' });
